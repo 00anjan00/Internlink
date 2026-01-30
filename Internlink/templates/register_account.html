@@ -1,0 +1,104 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Register | Step 3</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="auth-body">
+  <div class="auth-shell">
+    <aside class="auth-left">
+      <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
+        <img class="auth-left-logo"
+            src="{% static 'img/internlink_logo_white.png' %}"
+            alt="InternLink">
+
+        <span class="auth-logo-hint">Back to home</span>
+      </a>
+    </aside>
+
+    <main class="auth-right">
+      <div class="auth-card">
+        <h2>Create Login</h2>
+        <div class="wizard-meta">
+          <div class="stepper"><span style="width: 100%;"></span></div>
+          <div class="step-text">Step 3 of 3</div>
+        </div>
+
+        <p class="bottom-text">Step {{ step }} of 3</p>
+
+        {% if form.errors %}
+          <div class="form-error">
+            Please fix the errors below.
+            <ul style="margin:8px 0 0; padding-left:18px;">
+              {% for field in form %}
+                {% for err in field.errors %}
+                  <li><strong>{{ field.label }}:</strong> {{ err }}</li>
+                {% endfor %}
+              {% endfor %}
+              {% for err in form.non_field_errors %}
+                <li>{{ err }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <form method="post" novalidate class="card-soft">
+          {% csrf_token %}
+
+          <div class="form-grid">
+            <div class="grid-full">
+              <div class="input-wrap">
+                <label>Username</label>
+                <input type="text" name="username" required value="{{ form.username.value|default_if_none:'' }}">
+                <div class="field-err">{{ form.username.errors }}</div>
+              </div>
+            </div>
+
+            <div class="grid-full">
+              <div class="input-wrap">
+                <label>Email</label>
+                <input type="email" name="email" required value="{{ form.email.value|default_if_none:'' }}">
+                <div class="field-err">{{ form.email.errors }}</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="input-wrap">
+                <label>Password</label>
+                <input type="password" name="password1" required>
+                <div class="field-err">{{ form.password1.errors }}</div>
+                <div class="help-text">Use 8+ characters, not too common, not all numbers.</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="input-wrap">
+                <label>Confirm Password</label>
+                <input type="password" name="password2" required>
+                <div class="field-err">{{ form.password2.errors }}</div>
+              </div>
+            </div>
+
+            <div class="grid-full">
+              <label class="check check-agree">
+                <input type="checkbox" name="agree" {% if form.agree.value %}checked{% endif %} required>
+                I agree to the terms and policies
+              </label>
+              <div class="field-err">{{ form.agree.errors }}</div>
+            </div>
+          </div>
+
+          <div class="wizard-actions">
+            <a class="btn-ghost" href="{% url 'register_details' %}">Back</a>
+            <button class="btn-primary" type="submit">Create Account</button>
+          </div>
+        </form>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

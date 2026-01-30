@@ -1,0 +1,74 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Register | Step 2</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="auth-body">
+  <div class="auth-shell">
+    <aside class="auth-left">
+      <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
+        <img class="auth-left-logo"
+            src="{% static 'img/internlink_logo_white.png' %}"
+            alt="InternLink">
+
+        <span class="auth-logo-hint">Back to home</span>
+      </a>
+    </aside>
+
+
+
+    <main class="auth-right">
+      <div class="auth-card">
+
+        <h2>{% if role == "STUDENT" %}Student Details{% else %}Company Details{% endif %}</h2>
+
+        <!-- Modern stepper -->
+        <div class="wizard-meta">
+          <div class="stepper"><span style="width: 66%;"></span></div>
+          <div class="step-text">Step 2 of 3</div>
+        </div>
+
+        {% if form.errors %}
+          <div class="form-error">
+            Please fix the errors below.
+          </div>
+        {% endif %}
+
+        <form method="post" novalidate class="card-soft">
+          {% csrf_token %}
+
+          <div class="form-grid">
+            {% for field in form %}
+              <div class="
+                {% if field.name == 'skills' or field.name == 'linkedin_url' or field.name == 'portfolio_url' or field.name == 'address' %}
+                  grid-full
+                {% endif %}
+              ">
+                <div class="input-wrap">
+                  <label>{{ field.label }}</label>
+                  {{ field }}
+                  <div class="field-err">{{ field.errors }}</div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="wizard-actions">
+            <a class="btn-ghost" href="{% url 'register_role' %}">Back</a>
+            <button class="btn-primary" type="submit">Continue</button>
+          </div>
+        </form>
+
+        <p class="bottom-text" style="margin-top:14px;">
+          Your information helps us personalize internships and recommendations.
+        </p>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

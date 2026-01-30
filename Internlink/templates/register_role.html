@@ -1,0 +1,89 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Register | Step 1</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="auth-body">
+  <div class="auth-shell">
+    <aside class="auth-left">
+      <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
+        <img class="auth-left-logo"
+            src="{% static 'img/internlink_logo_white.png' %}"
+            alt="InternLink">
+
+        <span class="auth-logo-hint">Back to home</span>
+      </a>
+    </aside>
+
+
+
+    <main class="auth-right auth-right-center">
+      <div class="auth-card">
+
+        <h2>Create Account</h2>
+        <p class="bottom-text" style="margin-top:-8px;">
+          Choose your account type to continue.
+        </p>
+
+        <div class="wizard-meta">
+          <div class="stepper"><span style="width: 33%;"></span></div>
+          <div class="step-text">Step 1 of 3</div>
+        </div>
+
+        <form method="post" class="card-soft" novalidate>
+          {% csrf_token %}
+
+          <div class="role-grid" id="roleGrid">
+            <label class="role-card" data-role="STUDENT">
+              <input type="radio" name="role" value="STUDENT"
+                {% if form.role.value == "STUDENT" %}checked{% endif %}>
+              <div class="role-title">Student</div>
+              <p class="role-desc">
+                Apply for internships, build your profile, and track applications.
+              </p>
+              <span class="role-chip">For applicants</span>
+            </label>
+
+            <label class="role-card" data-role="COMPANY">
+              <input type="radio" name="role" value="COMPANY"
+                {% if form.role.value == "COMPANY" %}checked{% endif %}>
+              <div class="role-title">Company</div>
+              <p class="role-desc">
+                Post internships, review applicants, and manage postings.
+              </p>
+              <span class="role-chip">For recruiters</span>
+            </label>
+          </div>
+
+          <div class="field-err" style="text-align:left;">{{ form.role.errors }}</div>
+
+          <button class="btn-primary" type="submit" style="margin-top:14px;">
+            Continue
+          </button>
+        </form>
+
+        <p class="bottom-text" style="margin-top:14px;">
+          Already have an account? <a href="{% url 'login' %}">Login</a>
+        </p>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll(".role-card");
+    function syncSelected(){
+      cards.forEach(c => {
+        const input = c.querySelector("input");
+        c.classList.toggle("is-selected", input.checked);
+      });
+    }
+    cards.forEach(c => c.addEventListener("click", () => setTimeout(syncSelected, 0)));
+    syncSelected();
+  </script>
+</body>
+</html>

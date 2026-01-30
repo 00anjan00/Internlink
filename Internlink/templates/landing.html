@@ -1,0 +1,258 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InternLink</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body class="landing-body">
+
+  <!-- Top Bar -->
+  <header class="landing-topbar">
+  <img class="brand-logo" src="{% static 'img/internlink_logo.png' %}" alt="InternLink">
+  <a class="btn-login" href="{% url 'login' %}">Login</a>
+  </header>
+
+
+  <!-- Hero -->
+  <section class="hero">
+    <img class="hero-ill hero-ill-left" src="{% static 'img/left.png' %}" alt="">
+    <img class="hero-ill hero-ill-right" src="{% static 'img/right.png' %}" alt="">
+
+    <div class="hero-content">
+      <h1>We help interns to work<br>their way into the industry.</h1>
+
+      <!-- ONE primary CTA -->
+      <div class="hero-actions">
+        <a class="btn-cta" href="{% url 'register' %}">Get Started</a>
+      </div>
+
+      <p class="hero-sub">
+        Internships for students. Hiring made easier for companies.
+      </p>
+
+      <div class="hero-links">
+        <a href="#recent">Browse internships</a>
+        <span>•</span>
+        <a href="#how">See how it works</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="hero-divider"></div>
+
+  <!-- Main content under hero -->
+  <main class="landing-main">
+
+    <!-- Recent internships (static for now) -->
+    <section class="section section-soft" id="recent">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Recent internship openings</h2>
+          <p class="section-sub">Explore a few recent listings. (Static for now — we’ll connect DB later.)</p>
+        </div>
+
+        <!-- Neutral link (no login/register repetition) -->
+        <a class="link-btn" href="#recent">View all</a>
+      </div>
+
+      <div class="cards-grid">
+        <a class="job-card" href="{% url 'login' %}">
+          <div class="job-top">
+            <div class="job-title">Frontend Intern (React)</div>
+            <div class="job-chip">Paid</div>
+          </div>
+          <div class="job-meta">BluePeak Labs • Pokhara</div>
+          <div class="job-tags">
+            <span>On-site</span><span>3 months</span><span>Beginner</span>
+          </div>
+          <div class="job-foot">Posted 2 days ago</div>
+        </a>
+
+        <a class="job-card" href="{% url 'login' %}">
+          <div class="job-top">
+            <div class="job-title">Backend Intern (Django)</div>
+            <div class="job-chip">Paid</div>
+          </div>
+          <div class="job-meta">HimalTech • Kathmandu</div>
+          <div class="job-tags">
+            <span>Remote</span><span>2 months</span><span>Intermediate</span>
+          </div>
+          <div class="job-foot">Posted 4 days ago</div>
+        </a>
+
+        <a class="job-card" href="{% url 'login' %}">
+          <div class="job-top">
+            <div class="job-title">UI/UX Intern</div>
+            <div class="job-chip ghost">Unpaid</div>
+          </div>
+          <div class="job-meta">DesignNest • Pokhara</div>
+          <div class="job-tags">
+            <span>Hybrid</span><span>1 month</span><span>Beginner</span>
+          </div>
+          <div class="job-foot">Posted 1 week ago</div>
+        </a>
+
+        <a class="job-card" href="{% url 'login' %}">
+          <div class="job-top">
+            <div class="job-title">Data Analyst Intern</div>
+            <div class="job-chip">Paid</div>
+          </div>
+          <div class="job-meta">InsightWorks • Kathmandu</div>
+          <div class="job-tags">
+            <span>Remote</span><span>3 months</span><span>Intermediate</span>
+          </div>
+          <div class="job-foot">Posted 6 days ago</div>
+        </a>
+
+        <a class="job-card" href="{% url 'login' %}">
+          <div class="job-top">
+            <div class="job-title">Marketing Intern</div>
+            <div class="job-chip ghost">Stipend</div>
+          </div>
+          <div class="job-meta">Spark Media • Pokhara</div>
+          <div class="job-tags">
+            <span>On-site</span><span>2 months</span><span>Beginner</span>
+          </div>
+          <div class="job-foot">Posted 3 days ago</div>
+        </a>
+
+        <a class="job-card" href="{% url 'login' %}">
+          <div class="job-top">
+            <div class="job-title">QA Intern</div>
+            <div class="job-chip">Paid</div>
+          </div>
+          <div class="job-meta">CoreStack • Kathmandu</div>
+          <div class="job-tags">
+            <span>Hybrid</span><span>2 months</span><span>Beginner</span>
+          </div>
+          <div class="job-foot">Posted 5 days ago</div>
+        </a>
+      </div>
+    </section>
+
+    <div class="hero-divider"></div>
+
+    <!-- How it works -->
+    <section class="section" id="how">
+      <h2 class="section-title">How InternLink works</h2>
+      <p class="section-sub">Simple steps for students and companies.</p>
+
+      <div class="how-grid">
+  <div class="how-card">
+    <div class="how-badge">For Students</div>
+    <div class="how-step"><span>1</span> Create your account and profile</div>
+    <div class="how-step"><span>2</span> Explore internships and apply</div>
+    <div class="how-step"><span>3</span> Track applications and get shortlisted</div>
+
+    <div class="how-cta">
+      <a class="btn-mini" href="{% url 'register' %}">Create student account</a>
+    </div>
+  </div>
+
+  <div class="how-card">
+    <div class="how-badge">For Companies</div>
+    <div class="how-step"><span>1</span> Register your company account</div>
+    <div class="how-step"><span>2</span> Post internship openings</div>
+    <div class="how-step"><span>3</span> Review applicants and shortlist</div>
+
+    <div class="how-cta">
+      <a class="btn-mini" href="{% url 'register' %}">Create company account</a>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <div class="hero-divider"></div>
+
+    <!-- Benefits -->
+    <section class="section section-soft benefits" id="benefits">
+      <div class="benefits-wrap">
+        <div>
+          <h2 class="section-title">Benefits of using InternLink</h2>
+          <p class="section-sub">A clean platform to connect interns and companies faster.</p>
+
+          <div class="benefit-list">
+            <div class="benefit-item">
+              <div class="benefit-dot"></div>
+              <div>
+                <div class="benefit-title">Organized applications</div>
+                <div class="benefit-desc">Students can track what they applied for and companies can manage applicants easily.</div>
+              </div>
+            </div>
+
+            <div class="benefit-item">
+              <div class="benefit-dot"></div>
+              <div>
+                <div class="benefit-title">Faster hiring</div>
+                <div class="benefit-desc">Shortlist candidates quickly with a structured applicant view.</div>
+              </div>
+            </div>
+
+            <div class="benefit-item">
+              <div class="benefit-dot"></div>
+              <div>
+                <div class="benefit-title">Professional profiles</div>
+                <div class="benefit-desc">Students build strong profiles (portfolio editor will come later).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="benefits-card">
+          <div class="benefits-title">Ready to start?</div>
+          <p class="benefits-desc">Create an account in minutes and explore opportunities.</p>
+
+          <div class="benefits-actions">
+            <!-- ONE CTA only -->
+            <a class="btn-primary" href="{% url 'register' %}" style="height:56px;">Create your account</a>
+            <a class="link-btn" href="#recent" style="text-align:center;">Browse internships</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="{% static 'img/internlink_logo_white.png' %}" alt="InternLink" class="footer-logo">
+        <p class="footer-text">
+          InternLink connects students with internships and helps companies hire interns efficiently.
+        </p>
+      </div>
+
+      <div class="footer-cols">
+        <div class="footer-col">
+          <div class="footer-title">Quick Links</div>
+          <a href="{% url 'login' %}">Login</a>
+          <a href="{% url 'register' %}">Register</a>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-title">Company</div>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-title">Legal</div>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 InternLink. All rights reserved.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

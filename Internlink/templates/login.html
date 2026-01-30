@@ -1,0 +1,90 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | InternLink</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="auth-body">
+
+  <div class="auth-shell">
+    <aside class="auth-left">
+    <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
+        <img class="auth-left-logo"
+            src="{% static 'img/internlink_logo_white.png' %}"
+            alt="InternLink">
+
+        <span class="auth-logo-hint">Back to home</span>
+    </a>
+    </aside>
+
+
+
+    <main class="auth-right auth-right-center">
+      <div class="auth-card">
+
+        <h2>Log In</h2>
+        <p class="bottom-text" style="margin-bottom:16px;">
+          Welcome back. Continue to your InternLink account.
+        </p>
+
+        {% if error %}
+          <div class="form-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" class="card-soft" novalidate>
+          {% csrf_token %}
+
+          <div class="input-wrap">
+            <label>Email / Phone / Username</label>
+            <input
+              type="text"
+              name="identifier"
+              required
+              autocomplete="username"
+              placeholder="you@example.com or 98XXXXXXXX"
+              value="{{ form.identifier.value|default_if_none:'' }}"
+            >
+            {% if form.identifier.errors %}
+              <div class="field-err">{{ form.identifier.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="input-wrap" style="margin-top:14px;">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              required
+              autocomplete="current-password"
+              placeholder="Enter your password"
+            >
+            {% if form.password.errors %}
+              <div class="field-err">{{ form.password.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="auth-row">
+            <label class="check">
+              <input type="checkbox" name="remember_me">
+              Remember me
+            </label>
+
+            <a class="auth-link" href="#">Forgot password?</a>
+          </div>
+
+          <button class="btn-primary" type="submit">Log In</button>
+
+          <p class="bottom-text" style="margin-top:14px;">
+            Don’t have an account? <a href="{% url 'register' %}">Create one</a>
+          </p>
+        </form>
+
+      </div>
+    </main>
+  </div>
+
+</body>
+</html>
