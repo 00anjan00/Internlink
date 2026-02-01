@@ -1,37 +1,80 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Verify Email{% endblock %}
+{% block title %}Verify Email | InternLink{% endblock %}
 {% block body_class %}auth-body{% endblock %}
 
-{# We override "body" so we keep your original messages section exactly
-   and avoid showing messages twice (base.html also shows messages). #}
 {% block body %}
   <div class="auth-shell">
+    <aside class="auth-left">
+      <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
+        <img class="auth-left-logo"
+             src="{% static 'img/internlink_logo_white.png' %}"
+             alt="InternLink">
+        <span class="auth-logo-hint">Back to home</span>
+      </a>
+    </aside>
+
     <main class="auth-right auth-right-center">
       <div class="auth-card">
+
         <h2>Verify your email</h2>
-        <p class="bottom-text">We sent a 6-digit code to <strong>{{ email }}</strong>.</p>
+
+        <div class="wizard-meta">
+          <div class="stepper"><span style="width: 100%;"></span></div>
+          <div class="step-text">Step 4 of 4</div>
+        </div>
+
+        <p class="bottom-text">
+          We sent a 6-digit code to <strong>{{ email }}</strong>.
+        </p>
 
         {% if messages %}
-          {% for message in messages %}
-            <div class="form-error" style="margin-top:12px;">{{ message }}</div>
-          {% endfor %}
+          <div style="margin-top:12px;">
+            {% for message in messages %}
+              {% if "success" in message.tags %}
+                <div class="form-success">{{ message }}</div>
+              {% elif "info" in message.tags %}
+                <div class="form-info">{{ message }}</div>
+              {% else %}
+                <div class="form-error">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          </div>
         {% endif %}
 
-        <form method="post" class="card-soft" novalidate>
+        <form id="verifyForm" method="post" novalidate class="card-soft" style="margin-top:14px;">
           {% csrf_token %}
           <div class="input-wrap">
             <label>Verification code</label>
-            <input type="text" name="code" maxlength="6" required inputmode="numeric" autocomplete="one-time-code">
+            <input
+              class="otp-input"
+              type="text"
+              name="code"
+              maxlength="6"
+              required
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              placeholder="••••••"
+              autofocus
+            >
             <div class="field-err">{{ form.code.errors }}</div>
           </div>
-
-          <div class="wizard-actions" style="margin-top:14px;">
-            <a class="btn-ghost" href="{% url 'resend_email_code' %}">Resend code</a>
-            <button class="btn-primary" type="submit">Verify</button>
-          </div>
         </form>
+
+        <div class="wizard-actions">
+          <form method="post" action="{% url 'resend_email_code' %}">
+            {% csrf_token %}
+            <button class="btn-ghost" type="submit">Resend code</button>
+          </form>
+
+          <button class="btn-primary" type="submit" form="verifyForm">Verify</button>
+        </div>
+
+        <p class="bottom-text" style="margin-top:14px;">
+          Wrong email? <a href="{% url 'register_role' %}">Start over</a>
+        </p>
+
       </div>
     </main>
   </div>

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Resend Code | InternLink{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+
+{% block body %}
+  <div class="auth-shell">
+    <aside class="auth-left">
+      <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
+        <img class="auth-left-logo"
+             src="{% static 'img/internlink_logo_white.png' %}"
+             alt="InternLink">
+        <span class="auth-logo-hint">Back to home</span>
+      </a>
+    </aside>
+
+    <main class="auth-right auth-right-center">
+      <div class="auth-card">
+
+        <h2>Resend verification code</h2>
+
+        <div class="wizard-meta">
+          <div class="stepper"><span style="width: 100%;"></span></div>
+          {% if has_session_user %}
+            <div class="step-text">Step 4 of 4</div>
+          {% else %}
+            <div class="step-text">Email verification</div>
+          {% endif %}
+        </div>
+
+        <p class="bottom-text">
+          Request a new verification code.
+        </p>
+
+        {% if messages %}
+          <div style="margin-top:12px;">
+            {% for message in messages %}
+              {% if "success" in message.tags %}
+                <div class="form-success">{{ message }}</div>
+              {% elif "info" in message.tags %}
+                <div class="form-info">{{ message }}</div>
+              {% else %}
+                <div class="form-error">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if has_session_user %}
+          <form method="post" novalidate class="card-soft" style="margin-top:14px;">
+            {% csrf_token %}
+            <p class="bottom-text" style="margin:0 0 12px;">
+              We will send a new code to <strong>{{ email }}</strong>.
+            </p>
+
+            <div class="wizard-actions">
+              <a class="btn-ghost" href="{% url 'verify_email_code' %}">Back</a>
+              <button class="btn-primary" type="submit">Send new code</button>
+            </div>
+          </form>
+        {% else %}
+          <form method="post" novalidate class="card-soft" style="margin-top:14px;">
+            {% csrf_token %}
+            <div class="input-wrap">
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="you@example.com"
+                value="{{ prefill_email|default_if_none:'' }}"
+              >
+            </div>
+
+            <div class="wizard-actions">
+              <a class="btn-ghost" href="{% url 'login' %}">Back</a>
+              <button class="btn-primary" type="submit">Send new code</button>
+            </div>
+
+            <p class="bottom-text" style="margin-top:12px;">
+              If the account exists and isn’t verified yet, we’ll send a new code.
+            </p>
+          </form>
+        {% endif %}
+
+      </div>
+    </main>
+  </div>
+{% endblock %}

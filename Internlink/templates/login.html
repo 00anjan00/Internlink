@@ -68,6 +68,13 @@
 
             <a class="auth-link" href="#">Forgot password?</a>
           </div>
+            <p class="bottom-text" style="margin-top:10px;">
+              Didn’t verify your email?
+              <a href="{% url 'resend_email_code' %}?email={{ form.identifier.value|default_if_none:''|urlencode }}">
+                Resend verification code
+              </a>
+            </p>
+
 
           <button class="btn-primary" type="submit">Log In</button>
 

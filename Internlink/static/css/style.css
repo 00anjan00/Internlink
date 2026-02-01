@@ -1000,3 +1000,58 @@ button.btn-cta *, button.btn-ghost *{
   .footer-inner{ flex-direction:column; }
   .footer-cols{ grid-template-columns: 1fr; }
 }
+
+/* ================================
+   Wizard / OTP extras (Step 4)
+=================================== */
+
+/* Success + Info message boxes (matches .form-error sizing) */
+.form-success{
+  background:#ecfdf3;
+  color:#067647;
+  padding:12px 14px;
+  border-radius:12px;
+  margin: 12px 0 12px;
+  text-align:left;
+  font-size:14px;
+  border:1px solid #abefc6;
+  font-weight:400;
+}
+
+.form-info{
+  background:#eff6ff;
+  color:#1d4ed8;
+  padding:12px 14px;
+  border-radius:12px;
+  margin: 12px 0 12px;
+  text-align:left;
+  font-size:14px;
+  border:1px solid #bfdbfe;
+  font-weight:400;
+}
+
+/* Make OTP input feel intentional */
+.otp-input{
+  text-align:center;
+  letter-spacing: .42em;
+  font-size:20px;
+  font-weight:600;
+}
+
+/* If browser shows number spinners, hide them */
+.otp-input::-webkit-outer-spin-button,
+.otp-input::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+.otp-input[type=number]{ -moz-appearance: textfield; }
+
+/* Ensure wizard buttons align perfectly even when one is inside a form */
+.wizard-actions form{
+  margin:0;
+  flex:1;
+}
+.wizard-actions .btn-primary,
+.wizard-actions .btn-ghost{
+  width:100%;
+}

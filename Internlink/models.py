@@ -32,7 +32,6 @@ class StudentProfile(models.Model):
 
     skills = models.CharField(max_length=400, blank=True)     # "Python, Django, SQL"
     linkedin_url = models.URLField(blank=True)
-    portfolio_url = models.URLField(blank=True)
 
     def __str__(self):
         return f"Student: {self.profile.user.username}"
@@ -46,7 +45,6 @@ class CompanyProfile(models.Model):
     website = models.URLField(blank=True)
 
     address = models.CharField(max_length=200, blank=True)
-    company_size = models.CharField(max_length=50, blank=True)   # "1-10", "11-50" etc.
     hr_name = models.CharField(max_length=120, blank=True)
 
     def __str__(self):

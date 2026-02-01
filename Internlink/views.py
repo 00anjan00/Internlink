@@ -5,6 +5,9 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.db import transaction, IntegrityError
 
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.cache import never_cache
+
 from .utils import normalize_np_phone, looks_like_phone, create_or_refresh_email_otp
 from .forms import (
     RoleSelectForm, StudentStepForm, CompanyStepForm,
@@ -17,6 +20,18 @@ from .emails import send_verification_code_email
 REG_SESSION_KEY = "internlink_reg"
 VERIFY_SESSION_KEY = "internlink_verify_user_id"
 MAX_OTP_ATTEMPTS = 5
+
+
+# ===============================
+# Small render helper: prevent wizard pages from being cached
+# (Avoids stale CSRF token when user uses Back button)
+# ===============================
+def _render_no_store(request, template_name, context=None):
+    response = render(request, template_name, context or {})
+    response["Cache-Control"] = "no-store"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    return response
 
 
 # ===============================
@@ -76,11 +91,14 @@ def _reg_set(request, data: dict):
 # ===============================
 # Registration Wizard Steps
 # ===============================
+@never_cache
 def register_start(request):
     _reg_reset(request)
     return redirect("register_role")
 
 
+@never_cache
+@ensure_csrf_cookie
 def register_role(request):
     data = _reg_get(request)
     form = RoleSelectForm(request.POST or None, initial={"role": data.get("role")})
@@ -90,9 +108,11 @@ def register_role(request):
         _reg_set(request, data)
         return redirect("register_details")
 
-    return render(request, "register_role.html", {"form": form, "step": 1})
+    return _render_no_store(request, "register_role.html", {"form": form, "step": 1})
 
 
+@never_cache
+@ensure_csrf_cookie
 def register_details(request):
     data = _reg_get(request)
     role = data.get("role")
@@ -104,13 +124,19 @@ def register_details(request):
     form = FormClass(request.POST or None, initial=data.get("details", {}))
 
     if request.method == "POST" and form.is_valid():
-        data["details"] = form.cleaned_data  # phone already normalized in form
+        data["details"] = form.cleaned_data
         _reg_set(request, data)
         return redirect("register_account")
 
-    return render(request, "register_details.html", {"form": form, "role": role, "step": 2})
+    return _render_no_store(
+        request,
+        "register_details.html",
+        {"form": form, "role": role, "step": 2},
+    )
 
 
+@never_cache
+@ensure_csrf_cookie
 def register_account(request):
     data = _reg_get(request)
     role = data.get("role")
@@ -122,15 +148,34 @@ def register_account(request):
     form = AccountStepForm(request.POST or None, initial=data.get("account", {}))
 
     if request.method == "POST" and form.is_valid():
+        username = (form.cleaned_data.get("username") or "").strip()
+        email = (form.cleaned_data.get("email") or "").strip()
+        phone = details.get("phone")
+
+        # Pre-checks so we can show correct errors (not misleading)
+        if User.objects.filter(username__iexact=username).exists():
+            form.add_error("username", "This username is already taken.")
+            return _render_no_store(request, "register_account.html", {"form": form, "step": 3})
+
+        # Email is NOT unique by default in Django User, but your app UX expects it to be unique.
+        # So we enforce it here.
+        if User.objects.filter(email__iexact=email).exists():
+            form.add_error("email", "This email is already registered.")
+            return _render_no_store(request, "register_account.html", {"form": form, "step": 3})
+
+        # If your Profile.phone is unique (recommended), check it too.
+        if phone and Profile.objects.filter(phone=phone).exists():
+            form.add_error(None, "This phone number is already registered.")
+            return _render_no_store(request, "register_account.html", {"form": form, "step": 3})
+
         try:
             with transaction.atomic():
                 user = User.objects.create_user(
-                    username=form.cleaned_data["username"],
-                    email=form.cleaned_data["email"],
+                    username=username,
+                    email=email,
                     password=form.cleaned_data["password1"],
                 )
 
-                # Must verify email first
                 user.is_active = False
                 user.save(update_fields=["is_active"])
 
@@ -162,38 +207,45 @@ def register_account(request):
                         hr_name=details.get("hr_name", ""),
                     )
 
-                # Create OTP + send email AFTER DB commit succeeds
-                def _send_otp():
-                    otp = create_or_refresh_email_otp(user, minutes_valid=10)
-                    send_verification_code_email(user, otp.code)
+                # Create OTP inside the transaction (so failures roll back registration)
+                otp = create_or_refresh_email_otp(user, minutes_valid=10)
+                otp_code = otp.code
 
-                transaction.on_commit(_send_otp)
+                # Send email after commit succeeds (if email fails, user can use Resend on Step 4)
+                def _safe_send():
+                    try:
+                        send_verification_code_email(user, otp_code)
+                    except Exception:
+                        pass
 
-            # clear wizard session
+                transaction.on_commit(_safe_send)
+
             _reg_reset(request)
 
-            # store verify user id for OTP page
             request.session[VERIFY_SESSION_KEY] = user.id
             request.session.modified = True
 
             messages.success(request, "Account created! We sent a 6-digit verification code to your email.")
             return redirect("verify_email_code")
 
-        except IntegrityError:
-            form.add_error("username", "This username is already taken.")
-            form.add_error("email", "This email is already registered.")
-            return render(request, "register_account.html", {"form": form, "step": 3})
+        except IntegrityError as e:
+            # If something else caused IntegrityError (NOT NULL, DB constraint, etc.)
+            # show the real reason instead of lying about username/email.
+            form.add_error(None, f"Could not create account. Database error: {e}")
+            return _render_no_store(request, "register_account.html", {"form": form, "step": 3})
 
         except Exception as e:
-            form.add_error(None, f"Email could not be sent: {e}")
-            return render(request, "register_account.html", {"form": form, "step": 3})
+            form.add_error(None, f"Registration failed: {e}")
+            return _render_no_store(request, "register_account.html", {"form": form, "step": 3})
 
-    return render(request, "register_account.html", {"form": form, "step": 3})
+    return _render_no_store(request, "register_account.html", {"form": form, "step": 3})
 
 
 # ===============================
 # OTP Verify + Resend
 # ===============================
+@never_cache
+@ensure_csrf_cookie
 def verify_email_code(request):
     user_id = request.session.get(VERIFY_SESSION_KEY)
     if not user_id:
@@ -205,6 +257,11 @@ def verify_email_code(request):
         request.session.pop(VERIFY_SESSION_KEY, None)
         messages.error(request, "Verification session expired. Please register again.")
         return redirect("register_start")
+
+    if user.is_active:
+        request.session.pop(VERIFY_SESSION_KEY, None)
+        messages.info(request, "Your email is already verified. Please log in.")
+        return redirect("login")
 
     otp = getattr(user, "email_otp", None)
     if not otp or otp.is_used:
@@ -228,9 +285,8 @@ def verify_email_code(request):
             otp.attempts += 1
             otp.save(update_fields=["attempts"])
             messages.error(request, "Invalid code. Try again.")
-            return render(request, "verify_email_code.html", {"form": form, "email": user.email})
+            return _render_no_store(request, "verify_email_code.html", {"form": form, "email": user.email})
 
-        # success
         user.is_active = True
         user.save(update_fields=["is_active"])
         otp.is_used = True
@@ -241,37 +297,59 @@ def verify_email_code(request):
         messages.success(request, "Email verified! You can now log in.")
         return redirect("login")
 
-    return render(request, "verify_email_code.html", {"form": form, "email": user.email})
+    return _render_no_store(request, "verify_email_code.html", {"form": form, "email": user.email})
 
 
+@never_cache
+@ensure_csrf_cookie
 def resend_email_code(request):
     user_id = request.session.get(VERIFY_SESSION_KEY)
     user = User.objects.filter(id=user_id).first() if user_id else None
 
-    # If we have a session user, resend directly
+    # Mode A: user is already in verify flow (Step 4)
     if user and not user.is_active:
-        otp = create_or_refresh_email_otp(user, minutes_valid=10)
-        send_verification_code_email(user, otp.code)
-        messages.success(request, "A new code has been sent to your email.")
-        return redirect("verify_email_code")
+        if request.method == "POST":
+            otp = create_or_refresh_email_otp(user, minutes_valid=10)
+            send_verification_code_email(user, otp.code)
+            messages.success(request, "A new code has been sent to your email.")
+            return redirect("verify_email_code")
 
-    # Optional fallback: allow entering email to resend (don’t reveal existence)
+        return _render_no_store(
+            request,
+            "resend_email_code.html",
+            {"has_session_user": True, "email": user.email},
+        )
+
+    if user and user.is_active:
+        request.session.pop(VERIFY_SESSION_KEY, None)
+        messages.info(request, "Your email is already verified. Please log in.")
+        return redirect("login")
+
+    # Mode B: came from login (no session)
     if request.method == "POST":
         email = (request.POST.get("email") or "").strip().lower()
         user2 = User.objects.filter(email__iexact=email).first()
+
         if user2 and not user2.is_active:
             otp = create_or_refresh_email_otp(user2, minutes_valid=10)
             send_verification_code_email(user2, otp.code)
 
-        messages.success(request, "If the email exists, we sent a new code.")
+        messages.success(request, "If the email exists and isn't verified yet, we sent a new code.")
         return redirect("login")
 
-    return render(request, "resend_email_code.html")
+    prefill_email = (request.GET.get("email") or "").strip()
+    return _render_no_store(
+        request,
+        "resend_email_code.html",
+        {"has_session_user": False, "prefill_email": prefill_email},
+    )
 
 
 # ===============================
 # Login (username / email / phone)
 # ===============================
+@never_cache
+@ensure_csrf_cookie
 def login_page(request):
     if request.user.is_authenticated:
         return redirect("home_redirect")
@@ -297,14 +375,6 @@ def login_page(request):
             except ValueError:
                 user_obj = None
 
-        # If found but not verified
-        if user_obj and not user_obj.is_active:
-            # put them into verify flow
-            request.session[VERIFY_SESSION_KEY] = user_obj.id
-            request.session.modified = True
-            error = "Please verify your email before logging in. We can resend you a code."
-            return render(request, "login.html", {"form": form, "error": error})
-
         user = authenticate(
             request,
             username=user_obj.username,
@@ -312,10 +382,16 @@ def login_page(request):
         ) if user_obj else None
 
         if user:
+            if not user.is_active:
+                request.session[VERIFY_SESSION_KEY] = user.id
+                request.session.modified = True
+                messages.info(request, "Your account isn’t verified yet. Enter the code we emailed you (or resend a new one).")
+                return redirect("verify_email_code")
+
             login(request, user)
             request.session.set_expiry(1209600 if remember else 0)
             return redirect("home_redirect")
 
         error = "Invalid credentials. Please try again."
 
-    return render(request, "login.html", {"form": form, "error": error})
+    return _render_no_store(request, "login.html", {"form": form, "error": error})
