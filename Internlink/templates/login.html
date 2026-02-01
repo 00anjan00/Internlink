@@ -1,26 +1,20 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login | InternLink</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body class="auth-body">
 
+{% block title %}Login | InternLink{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+
+{% block content %}
   <div class="auth-shell">
     <aside class="auth-left">
-    <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
+      <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
         <img class="auth-left-logo"
-            src="{% static 'img/internlink_logo_white.png' %}"
-            alt="InternLink">
+             src="{% static 'img/internlink_logo_white.png' %}"
+             alt="InternLink">
 
         <span class="auth-logo-hint">Back to home</span>
-    </a>
+      </a>
     </aside>
-
-
 
     <main class="auth-right auth-right-center">
       <div class="auth-card">
@@ -85,6 +79,4 @@
       </div>
     </main>
   </div>
-
-</body>
-</html>
+{% endblock %}

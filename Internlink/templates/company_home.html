@@ -1,21 +1,19 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Student | InternLink</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body class="dash-body">
+
+{% block title %}Company | InternLink{% endblock %}
+{% block body_class %}dash-body{% endblock %}
+
+{% block header %}
   <header class="dash-top">
     <img class="brand-logo" src="{% static 'img/internlink_logo.png' %}" alt="InternLink">
     <a class="link-muted" href="{% url 'logout' %}">Logout</a>
   </header>
+{% endblock %}
 
+{% block content %}
   <main class="dash-main">
     <h1>Company Home</h1>
     <p>Welcome, {{ profile.full_name }}.</p>
   </main>
-</body>
-</html>
+{% endblock %}

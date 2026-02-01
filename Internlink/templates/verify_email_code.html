@@ -1,13 +1,12 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Verify Email</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body class="auth-body">
+
+{% block title %}Verify Email{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+
+{# We override "body" so we keep your original messages section exactly
+   and avoid showing messages twice (base.html also shows messages). #}
+{% block body %}
   <div class="auth-shell">
     <main class="auth-right auth-right-center">
       <div class="auth-card">
@@ -36,5 +35,4 @@
       </div>
     </main>
   </div>
-</body>
-</html>
+{% endblock %}

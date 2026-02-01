@@ -1,22 +1,18 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>InternLink</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
 
-<body class="landing-body">
+{% block title %}InternLink{% endblock %}
+{% block body_class %}landing-body{% endblock %}
 
+{% block header %}
   <!-- Top Bar -->
   <header class="landing-topbar">
-  <img class="brand-logo" src="{% static 'img/internlink_logo.png' %}" alt="InternLink">
-  <a class="btn-login" href="{% url 'login' %}">Login</a>
+    <img class="brand-logo" src="{% static 'img/internlink_logo.png' %}" alt="InternLink">
+    <a class="btn-login" href="{% url 'login' %}">Login</a>
   </header>
+{% endblock %}
 
-
+{% block content %}
   <!-- Hero -->
   <section class="hero">
     <img class="hero-ill hero-ill-left" src="{% static 'img/left.png' %}" alt="">
@@ -142,29 +138,28 @@
       <p class="section-sub">Simple steps for students and companies.</p>
 
       <div class="how-grid">
-  <div class="how-card">
-    <div class="how-badge">For Students</div>
-    <div class="how-step"><span>1</span> Create your account and profile</div>
-    <div class="how-step"><span>2</span> Explore internships and apply</div>
-    <div class="how-step"><span>3</span> Track applications and get shortlisted</div>
+        <div class="how-card">
+          <div class="how-badge">For Students</div>
+          <div class="how-step"><span>1</span> Create your account and profile</div>
+          <div class="how-step"><span>2</span> Explore internships and apply</div>
+          <div class="how-step"><span>3</span> Track applications and get shortlisted</div>
 
-    <div class="how-cta">
-      <a class="btn-mini" href="{% url 'register' %}">Create student account</a>
-    </div>
-  </div>
+          <div class="how-cta">
+            <a class="btn-mini" href="{% url 'register' %}">Create student account</a>
+          </div>
+        </div>
 
-  <div class="how-card">
-    <div class="how-badge">For Companies</div>
-    <div class="how-step"><span>1</span> Register your company account</div>
-    <div class="how-step"><span>2</span> Post internship openings</div>
-    <div class="how-step"><span>3</span> Review applicants and shortlist</div>
+        <div class="how-card">
+          <div class="how-badge">For Companies</div>
+          <div class="how-step"><span>1</span> Register your company account</div>
+          <div class="how-step"><span>2</span> Post internship openings</div>
+          <div class="how-step"><span>3</span> Review applicants and shortlist</div>
 
-    <div class="how-cta">
-      <a class="btn-mini" href="{% url 'register' %}">Create company account</a>
-    </div>
-  </div>
-</div>
-
+          <div class="how-cta">
+            <a class="btn-mini" href="{% url 'register' %}">Create company account</a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <div class="hero-divider"></div>
@@ -217,7 +212,9 @@
     </section>
 
   </main>
+{% endblock %}
 
+{% block footer %}
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-inner">
@@ -253,6 +250,4 @@
       <span>© 2026 InternLink. All rights reserved.</span>
     </div>
   </footer>
-
-</body>
-</html>
+{% endblock %}

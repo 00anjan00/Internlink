@@ -1,13 +1,10 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Register | Step 3</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body class="auth-body">
+
+{% block title %}Register | Step 3{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+
+{% block content %}
   <div class="auth-shell">
     <aside class="auth-left">
       <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
@@ -100,5 +97,4 @@
       </div>
     </main>
   </div>
-</body>
-</html>
+{% endblock %}

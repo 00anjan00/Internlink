@@ -1,13 +1,10 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Register | Step 1</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body class="auth-body">
+
+{% block title %}Register | Step 1{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+
+{% block content %}
   <div class="auth-shell">
     <aside class="auth-left">
       <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
@@ -73,7 +70,9 @@
       </div>
     </main>
   </div>
+{% endblock %}
 
+{% block extra_js %}
   <script>
     const cards = document.querySelectorAll(".role-card");
     function syncSelected(){
@@ -85,5 +84,4 @@
     cards.forEach(c => c.addEventListener("click", () => setTimeout(syncSelected, 0)));
     syncSelected();
   </script>
-</body>
-</html>
+{% endblock %}
