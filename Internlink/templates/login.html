@@ -11,7 +11,6 @@
         <img class="auth-left-logo"
              src="{% static 'img/internlink_logo_white.png' %}"
              alt="InternLink">
-
         <span class="auth-logo-hint">Back to home</span>
       </a>
     </aside>
@@ -20,7 +19,7 @@
       <div class="auth-card">
 
         <h2>Log In</h2>
-        <p class="bottom-text" style="margin-bottom:16px;">
+        <p class="bottom-text auth-subtitle">
           Welcome back. Continue to your InternLink account.
         </p>
 
@@ -42,21 +41,35 @@
               value="{{ form.identifier.value|default_if_none:'' }}"
             >
             {% if form.identifier.errors %}
-              <div class="field-err">{{ form.identifier.errors }}</div>
+              <div class="field-err">{{ form.identifier.errors.0 }}</div>
             {% endif %}
           </div>
 
-          <div class="input-wrap" style="margin-top:14px;">
+          <div class="input-wrap ui-gap-md">
             <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              required
-              autocomplete="current-password"
-              placeholder="Enter your password"
-            >
+
+            <div class="input-inline">
+              <input
+                id="passwordInput"
+                type="password"
+                name="password"
+                required
+                autocomplete="current-password"
+                placeholder="Enter your password"
+              >
+              <button
+                type="button"
+                class="pw-toggle"
+                id="togglePwBtn"
+                aria-pressed="false"
+                aria-label="Show password"
+              >
+                Show
+              </button>
+            </div>
+
             {% if form.password.errors %}
-              <div class="field-err">{{ form.password.errors }}</div>
+              <div class="field-err">{{ form.password.errors.0 }}</div>
             {% endif %}
           </div>
 
@@ -68,17 +81,21 @@
 
             <a class="auth-link" href="#">Forgot password?</a>
           </div>
-            <p class="bottom-text" style="margin-top:10px;">
-              Didn’t verify your email?
-              <a href="{% url 'resend_email_code' %}?email={{ form.identifier.value|default_if_none:''|urlencode }}">
-                Resend verification code
-              </a>
-            </p>
 
+          <div class="auth-actions">
+            <button class="btn-primary" type="submit">Log In</button>
+          </div>
 
-          <button class="btn-primary" type="submit">Log In</button>
+          <p class="auth-helper">
+            Didn’t verify your email?
+            <a href="{% url 'resend_email_code' %}?email={{ form.identifier.value|default_if_none:''|urlencode }}">
+              Resend verification code
+            </a>
+          </p>
 
-          <p class="bottom-text" style="margin-top:14px;">
+          <div class="auth-divider"></div>
+
+          <p class="bottom-text auth-footer">
             Don’t have an account? <a href="{% url 'register' %}">Create one</a>
           </p>
         </form>
@@ -86,4 +103,22 @@
       </div>
     </main>
   </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    const input = document.getElementById("passwordInput");
+    const btn = document.getElementById("togglePwBtn");
+    if (!input || !btn) return;
+
+    btn.addEventListener("click", function () {
+      const showing = input.type === "text";
+      input.type = showing ? "password" : "text";
+      btn.textContent = showing ? "Show" : "Hide";
+      btn.setAttribute("aria-pressed", showing ? "false" : "true");
+      btn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    });
+  })();
+</script>
 {% endblock %}

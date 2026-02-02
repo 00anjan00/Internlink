@@ -31,10 +31,11 @@
 
 
         {% if form.errors %}
-          <div class="form-error">
-            Please fix the errors below.
+          <div class="alert alert--error">
+            <div class="alert__title">Please fix the highlighted fields.</div>
           </div>
         {% endif %}
+
 
         <form method="post" novalidate class="card-soft">
           {% csrf_token %}

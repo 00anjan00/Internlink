@@ -34,18 +34,13 @@
         </p>
 
         {% if messages %}
-          <div style="margin-top:12px;">
+          <div class="alert-stack">
             {% for message in messages %}
-              {% if "success" in message.tags %}
-                <div class="form-success">{{ message }}</div>
-              {% elif "info" in message.tags %}
-                <div class="form-info">{{ message }}</div>
-              {% else %}
-                <div class="form-error">{{ message }}</div>
-              {% endif %}
+              <div class="alert alert--{{ message.level_tag }}">{{ message }}</div>
             {% endfor %}
           </div>
         {% endif %}
+
 
         {% if has_session_user %}
           <form method="post" novalidate class="card-soft" style="margin-top:14px;">

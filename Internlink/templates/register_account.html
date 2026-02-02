@@ -9,34 +9,29 @@
     <aside class="auth-left">
       <a href="{% url 'landing' %}" class="auth-logo-link" aria-label="Back to InternLink home">
         <img class="auth-left-logo"
-            src="{% static 'img/internlink_logo_white.png' %}"
-            alt="InternLink">
+             src="{% static 'img/internlink_logo_white.png' %}"
+             alt="InternLink">
 
         <span class="auth-logo-hint">Back to home</span>
       </a>
     </aside>
 
+    <!-- Keep top-aligned (scroll-friendly) on long pages -->
     <main class="auth-right">
       <div class="auth-card">
         <h2>Create Login</h2>
+
         <div class="wizard-meta">
           <div class="stepper"><span style="width: 75%;"></span></div>
           <div class="step-text">Step 3 of 4</div>
         </div>
 
         {% if form.errors %}
-          <div class="form-error">
-            Please fix the errors below.
-            <ul style="margin:8px 0 0; padding-left:18px;">
-              {% for field in form %}
-                {% for err in field.errors %}
-                  <li><strong>{{ field.label }}:</strong> {{ err }}</li>
-                {% endfor %}
-              {% endfor %}
-              {% for err in form.non_field_errors %}
-                <li>{{ err }}</li>
-              {% endfor %}
-            </ul>
+          <div class="alert alert--error">
+            <div class="alert__title">Please fix the highlighted fields.</div>
+            {% if form.non_field_errors %}
+              <div class="alert__body">{{ form.non_field_errors.0 }}</div>
+            {% endif %}
           </div>
         {% endif %}
 
@@ -48,7 +43,9 @@
               <div class="input-wrap">
                 <label>Username</label>
                 <input type="text" name="username" required value="{{ form.username.value|default_if_none:'' }}">
-                <div class="field-err">{{ form.username.errors }}</div>
+                {% if form.username.errors %}
+                  <div class="field-err">{{ form.username.errors.0 }}</div>
+                {% endif %}
               </div>
             </div>
 
@@ -56,7 +53,9 @@
               <div class="input-wrap">
                 <label>Email</label>
                 <input type="email" name="email" required value="{{ form.email.value|default_if_none:'' }}">
-                <div class="field-err">{{ form.email.errors }}</div>
+                {% if form.email.errors %}
+                  <div class="field-err">{{ form.email.errors.0 }}</div>
+                {% endif %}
               </div>
             </div>
 
@@ -64,8 +63,9 @@
               <div class="input-wrap">
                 <label>Password</label>
                 <input type="password" name="password1" required>
-                <div class="field-err">{{ form.password1.errors }}</div>
-                <div class="help-text">Use 8+ characters, not too common, not all numbers.</div>
+                {% if form.password1.errors %}
+                  <div class="field-err">{{ form.password1.errors.0 }}</div>
+                {% endif %}
               </div>
             </div>
 
@@ -73,7 +73,9 @@
               <div class="input-wrap">
                 <label>Confirm Password</label>
                 <input type="password" name="password2" required>
-                <div class="field-err">{{ form.password2.errors }}</div>
+                {% if form.password2.errors %}
+                  <div class="field-err">{{ form.password2.errors.0 }}</div>
+                {% endif %}
               </div>
             </div>
 
@@ -82,7 +84,9 @@
                 <input type="checkbox" name="agree" {% if form.agree.value %}checked{% endif %} required>
                 I agree to the terms and policies
               </label>
-              <div class="field-err">{{ form.agree.errors }}</div>
+              {% if form.agree.errors %}
+                <div class="field-err">{{ form.agree.errors.0 }}</div>
+              {% endif %}
             </div>
           </div>
 
